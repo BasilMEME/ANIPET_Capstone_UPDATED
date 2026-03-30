@@ -1,0 +1,58 @@
+package com.example.anipet_capstone.network
+
+import com.example.anipet_capstone.models.ApplicationsResponse
+import com.example.anipet_capstone.models.ApplyResponse
+import com.example.anipet_capstone.models.AuthResponse
+import com.example.anipet_capstone.models.PetDetailResponse
+import com.example.anipet_capstone.models.PetsResponse
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
+import com.example.anipet_capstone.models.QrVerifyResponse
+
+interface ApiService {
+
+    @GET("verify_qr.php")
+    suspend fun verifyQr(
+        @Query("qr_code") qrCode: String
+    ): QrVerifyResponse
+
+    @FormUrlEncoded
+    @POST("register.php")
+    suspend fun registerUser(
+        @Field("full_name") fullName: String,
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): AuthResponse
+
+    @FormUrlEncoded
+    @POST("login.php")
+    suspend fun loginUser(
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): AuthResponse
+
+    @GET("get_pet.php")
+    suspend fun getPet(
+        @Query("pet_id") petId: String
+    ): PetDetailResponse
+
+    @GET("get_applications.php")
+    suspend fun getApplications(
+        @Query("user_id") userId: String
+    ): ApplicationsResponse
+
+    @GET("get_pets.php")
+    suspend fun getPets(): PetsResponse
+
+    @FormUrlEncoded
+    @POST("apply_adoption.php")
+    suspend fun applyAdoption(
+        @Field("pet_id") petId: String,
+        @Field("user_id") userId: String,
+        @Field("applicant_name") applicantName: String,
+        @Field("message") message: String
+    ): ApplyResponse
+}

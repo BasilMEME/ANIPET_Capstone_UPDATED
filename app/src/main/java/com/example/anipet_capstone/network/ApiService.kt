@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import com.example.anipet_capstone.models.QrVerifyResponse
+import com.example.anipet_capstone.models.OtpResponse
 
 interface ApiService {
 
@@ -22,10 +23,27 @@ interface ApiService {
     @FormUrlEncoded
     @POST("register.php")
     suspend fun registerUser(
-        @Field("full_name") fullName: String,
+        @Field("first_name") firstName: String,
+        @Field("middle_name") middleName: String,
+        @Field("last_name") lastName: String,
+        @Field("suffix") suffix: String,
         @Field("email") email: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("confirm_password") confirmPassword: String
     ): AuthResponse
+
+    @FormUrlEncoded
+    @POST("send_otp.php")
+    suspend fun sendOtp(
+        @Field("email") email: String
+    ): OtpResponse
+
+    @FormUrlEncoded
+    @POST("verify_otp.php")
+    suspend fun verifyOtp(
+        @Field("email") email: String,
+        @Field("otp") otp: String
+    ): OtpResponse
 
     @FormUrlEncoded
     @POST("login.php")

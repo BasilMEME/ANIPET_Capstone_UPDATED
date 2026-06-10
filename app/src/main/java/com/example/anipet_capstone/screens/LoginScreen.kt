@@ -1,87 +1,128 @@
 package com.example.anipet_capstone.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.graphics.Color
 import com.example.anipet_capstone.network.ApiClient
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: (String, String, String) -> Unit,
-    onGoToRegister: () -> Unit
+    onGoToRegister: () -> Unit,
+    onNavigateToOtp: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var statusText by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Login", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(16.dp))
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { inner ->
+        AppContainer(inner) {
+            AppTopBar("Login to AniPet")
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            StandardCard(title = "Credentials") {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
+                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
+                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    )
+                )
 
-        Spacer(modifier = Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
+                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
+                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    )
+                )
+            }
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            scope.launch {
-                try {
-                    val res = ApiClient.api.loginUser(email, password)
-
-                    if (res.status == "success" && res.user != null) {
-                        onLoginSuccess(
-                            res.user.id.toString(),
-                            res.user.full_name,
-                            res.user.email
-                        )
-                    } else {
-                        statusText = res.message
+            PrimaryButton(
+                text = if (isLoading) "Logging in..." else "Login",
+                onClick = {
+                    scope.launch {
+                        isLoading = true
+                        try {
+                            val res = ApiClient.api.loginUser(email, password)
+                            if (res.status == "success" && res.user != null) {
+                                onLoginSuccess(
+                                    res.user.id.toString(),
+                                    res.user.full_name,
+                                    res.user.email
+                                )
+                            } else if (res.status == "unverified") {
+                                statusText = "Account not verified. Please verify using the OTP sent to your email."
+                                onNavigateToOtp(email)
+                            } else {
+                                statusText = res.message
+                            }
+                        } catch (e: Exception) {
+                            statusText = "Error: ${e.message}"
+                        } finally {
+                            isLoading = false
+                        }
                     }
-                } catch (e: Exception) {
-                    statusText = "Error: ${e.message}"
+                },
+                enabled = !isLoading
+            )
+
+            SecondaryButton(
+                text = "Create Account",
+                onClick = onGoToRegister,
+                enabled = !isLoading
+            )
+
+            if (statusText.isNotBlank()) {
+                StandardCard {
+                    Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                 }
             }
-        }) {
-            Text("Login")
+
+            androidx.compose.runtime.LaunchedEffect(statusText) {
+                if (statusText.isNotBlank()) scope.launch { snackbarHostState.showSnackbar(statusText) }
+            }
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(onClick = onGoToRegister) {
-            Text("Go to Register")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(statusText)
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.network.ApiClient
@@ -55,12 +56,12 @@ fun MyApplicationsScreen(
     var applications by remember { mutableStateOf(listOf<ApplicationItem>()) }
 
     if (userId == null) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("User not logged in")
-            Spacer(modifier = Modifier.height(10.dp))
-            Button(onClick = onBack) {
-                Text("Back")
+        AppContainer() {
+            AppTopBar("My Applications", onBack = onBack)
+            StandardCard {
+                Text("User not logged in. Please log in to view your applications.", color = ComposeColor.White.copy(alpha = 0.75f))
             }
+            SecondaryButton("Back", onClick = onBack)
         }
         return
     }
@@ -78,57 +79,51 @@ fun MyApplicationsScreen(
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row {
-            Button(onClick = { loadApplications() }) {
-                Text("Refresh Applications")
-            }
+    AppContainer() {
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val contentModifier = if (maxWidth >= 720.dp) Modifier
+                .fillMaxWidth()
+                .widthIn(max = 760.dp)
+                .padding(horizontal = 12.dp)
+            else Modifier.fillMaxWidth()
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Column(modifier = contentModifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                AppTopBar("My Applications", onBack = onBack)
 
-            Button(onClick = onBack) {
-                Text("Back")
-            }
-        }
+                PrimaryButton("Refresh Applications", onClick = { loadApplications() })
 
-        Spacer(modifier = Modifier.height(10.dp))
-        Text("Status: $statusText")
-        Spacer(modifier = Modifier.height(10.dp))
+                if (applications.isEmpty()) {
+                    StandardCard {
+                        Text("No applications yet. Start by browsing and applying for adoptable pets.", color = ComposeColor.White.copy(alpha = 0.75f))
+                    }
+                } else {
+                    applications.forEach { app ->
+                        StandardCard(title = "Application #${app.id}") {
+                            InfoText("Pet ID", app.pet_id)
+                            InfoText("Applicant", app.applicant_name)
+                            InfoText("Status", app.status)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Message: ${app.message}", color = ComposeColor.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
 
-        LazyColumn {
-            items(applications) { app ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        Text("Application #${app.id}", style = MaterialTheme.typography.titleMedium)
-                        Text("Pet ID: ${app.pet_id}")
-                        Text("Applicant: ${app.applicant_name}")
-                        Text("Message: ${app.message}")
-                        Text("Status: ${app.status}")
-
-                        if (!app.qr_code.isNullOrBlank()) {
-
-                            val qrBitmap = remember(app.qr_code) {
-                                generateQRCode(app.qr_code!!)
+                            if (!app.qr_code.isNullOrBlank()) {
+                                val qrBitmap = remember(app.qr_code) {
+                                    generateQRCode(app.qr_code!!)
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Image(
+                                    bitmap = qrBitmap.asImageBitmap(),
+                                    contentDescription = "QR Code",
+                                    modifier = Modifier.size(180.dp)
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))
-
-                            Image(
-                                bitmap = qrBitmap.asImageBitmap(),
-                                contentDescription = "QR Code",
-                                modifier = Modifier.size(180.dp)
-                            )
+                            Text("Date: ${app.created_at}", color = ComposeColor.White.copy(alpha = 0.65f), style = MaterialTheme.typography.labelSmall)
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Date: ${app.created_at}")
                     }
                 }
+
+                SecondaryButton("Back", onClick = onBack)
             }
         }
     }

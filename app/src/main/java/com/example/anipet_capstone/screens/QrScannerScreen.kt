@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.models.VerifiedApplication
 import com.example.anipet_capstone.network.ApiClient
@@ -54,50 +55,43 @@ fun QrScannerScreen(
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row {
-            Button(onClick = {
+    AppContainer() {
+        AppTopBar("QR Scanner", onBack = onBack)
+
+        StandardCard(title = "Adoption Verification") {
+            Text("Scan the adopter's QR code to verify their application.", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+            Spacer(modifier = Modifier.height(12.dp))
+            PrimaryButton("Scan QR Code", onClick = {
                 val options = ScanOptions().apply {
                     setPrompt("Scan adopter QR code")
                     setBeepEnabled(true)
                     setOrientationLocked(false)
                 }
                 scannerLauncher.launch(options)
-            }) {
-                Text("Scan QR")
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Button(onClick = onBack) {
-                Text("Back")
-            }
+            })
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(statusText)
-
-        Spacer(modifier = Modifier.height(12.dp))
+        if (statusText.isNotBlank()) {
+            StandardCard {
+                Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+            }
+        }
 
         resultData?.let { app ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Verified Application", style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Applicant: ${app.applicant_name}")
-                    Text("Pet Name: ${app.pet_name}")
-                    Text("Breed: ${app.breed}")
-                    Text("Age: ${app.age}")
-                    Text("Gender: ${app.gender}")
-                    Text("Message: ${app.message}")
-                    Text("Status: ${app.status}")
-                    Text("QR Code: ${app.qr_code}")
-                    Text("Date: ${app.created_at}")
-                }
+            StandardCard(title = "Verified Application") {
+                InfoText("Applicant", app.applicant_name)
+                InfoText("Pet", app.pet_name)
+                InfoText("Breed", app.breed)
+                InfoText("Age", app.age)
+                InfoText("Gender", app.gender)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Message: ${app.message}", color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoText("Status", app.status)
+                InfoText("Date", app.created_at)
             }
         }
+
+        SecondaryButton("Back", onClick = onBack)
     }
 }

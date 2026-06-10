@@ -25,6 +25,9 @@ sealed class Screen(val route: String) {
     object PetsList : Screen("pets_list")
     object MyApplications : Screen("my_applications")
     object QrScanner : Screen("qr_scanner")
+    object Otp : Screen("otp/{email}") {
+        fun createRoute(email: String) = "otp/$email"
+    }
 
     object PetDetails : Screen("pet_details/{petId}") {
         fun createRoute(petId: String) = "pet_details/$petId"
@@ -91,6 +94,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onGoToRegister = {
                                 navController.navigate(Screen.Register.route)
+                            },
+                            onNavigateToOtp = { email ->
+                                navController.navigate(Screen.Otp.createRoute(email))
                             }
                         )
                     }
@@ -102,7 +108,26 @@ class MainActivity : ComponentActivity() {
                             },
                             onBackToLogin = {
                                 navController.popBackStack()
+                            },
+                            onNavigateToOtp = { email ->
+                                navController.navigate(Screen.Otp.createRoute(email))
                             }
+                        )
+                    }
+
+                    composable(
+                        route = Screen.Otp.route,
+                        arguments = listOf(navArgument("email") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val email = backStackEntry.arguments?.getString("email") ?: ""
+                        com.example.anipet_capstone.screens.OtpScreen(
+                            email = email,
+                            onVerified = {
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                }
+                            },
+                            onBack = { navController.popBackStack() }
                         )
                     }
 

@@ -19,6 +19,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // API base URL used at build time; default points to emulator host
+        // You can override by setting API_BASE_URL in project or global gradle.properties
+        val apiBaseUrl: String = (project.findProperty("API_BASE_URL") as? String)
+            ?: "http://10.0.2.2/Anipet/php-backend/"
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
     }
 
     buildTypes {
@@ -36,12 +41,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
-    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation("com.google.zxing:core:3.5.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.1")
     implementation("io.coil-kt:coil-compose:2.6.0")

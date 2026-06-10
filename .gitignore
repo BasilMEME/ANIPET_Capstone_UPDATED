@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/
+.kotlin/
+build_output.txt
+build-full.log
+gradle/wrapper/dists/
+app/build/

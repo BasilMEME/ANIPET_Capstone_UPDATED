@@ -1,6 +1,10 @@
 package com.example.anipet_capstone.screens
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -8,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,9 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.network.ApiClient
 import kotlinx.coroutines.launch
 
@@ -34,8 +41,12 @@ fun RegisterScreen(
     var lastName by remember { mutableStateOf("") }
     var suffix by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var contactPref by remember { mutableStateOf("Email") }
     var statusText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -50,17 +61,7 @@ fun RegisterScreen(
                     onValueChange = { firstName = it },
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -68,17 +69,7 @@ fun RegisterScreen(
                     onValueChange = { middleName = it },
                     label = { Text("Middle Name (optional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -86,17 +77,7 @@ fun RegisterScreen(
                     onValueChange = { lastName = it },
                     label = { Text("Last Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -104,17 +85,7 @@ fun RegisterScreen(
                     onValueChange = { suffix = it },
                     label = { Text("Suffix (optional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -122,17 +93,47 @@ fun RegisterScreen(
                     onValueChange = { email = it },
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
+                )
+
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = AppTextFieldColors()
+                )
+
+                OutlinedTextField(
+                    value = address,
+                    onValueChange = { address = it },
+                    label = { Text("Address (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = AppTextFieldColors()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Preferred contact method",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    RadioButton(selected = contactPref == "Email", onClick = { contactPref = "Email" })
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Email", color = MaterialTheme.colorScheme.onSurface)
+                    Spacer(modifier = Modifier.width(16.dp))
+                    RadioButton(selected = contactPref == "Phone", onClick = { contactPref = "Phone" })
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Phone", color = MaterialTheme.colorScheme.onSurface)
+                }
+
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -142,17 +143,7 @@ fun RegisterScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -162,17 +153,7 @@ fun RegisterScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
             }
 
@@ -188,14 +169,18 @@ fun RegisterScreen(
                                 statusText = "Passwords do not match"
                             } else {
                                 val res = ApiClient.api.registerUser(
-                                    firstName = firstName,
-                                    middleName = middleName,
-                                    lastName = lastName,
-                                    suffix = suffix,
-                                    email = email,
-                                    password = password,
-                                    confirmPassword = confirmPassword
-                                )
+                                        username = username,
+                                        firstName = firstName,
+                                        middleName = middleName,
+                                        lastName = lastName,
+                                        suffix = suffix,
+                                        email = email,
+                                        phone = phone,
+                                        address = address,
+                                        contactPreference = contactPref.lowercase(),
+                                        password = password,
+                                        confirmPassword = confirmPassword
+                                    )
                                 statusText = res.message
                                 if (res.status == "success") {
                                     val otpRes = try {

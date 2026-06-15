@@ -39,17 +39,7 @@ fun OtpScreen(
                     onValueChange = { otp = it },
                     label = { Text("OTP") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
             }
 

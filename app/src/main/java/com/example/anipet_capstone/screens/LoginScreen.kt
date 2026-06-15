@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String, String) -> Unit,
+    onLoginSuccess: (String, String, String, String?, String?) -> Unit,
     onGoToRegister: () -> Unit,
     onNavigateToOtp: (String) -> Unit
 ) {
@@ -43,19 +43,9 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text("Email or Username") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
 
                 OutlinedTextField(
@@ -65,17 +55,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                        focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                    colors = AppTextFieldColors()
                 )
             }
 
@@ -90,7 +70,9 @@ fun LoginScreen(
                                 onLoginSuccess(
                                     res.user.id.toString(),
                                     res.user.full_name,
-                                    res.user.email
+                                    res.user.email,
+                                    res.user.username,
+                                    res.user.role
                                 )
                             } else if (res.status == "unverified") {
                                 statusText = "Account not verified. Please verify using the OTP sent to your email."

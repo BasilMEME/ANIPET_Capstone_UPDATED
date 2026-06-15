@@ -57,6 +57,8 @@ import kotlinx.coroutines.launch
 fun PetsListScreen(
     onPetClick: (String) -> Unit = {},
     onMyApplicationsClick: () -> Unit = {},
+    onAppointmentsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onQrScannerClick: () -> Unit = {},
     fullName: String = "User"
@@ -151,6 +153,8 @@ fun PetsListScreen(
                     onRefresh = { loadPets() },
                     onMyApplicationsClick = onMyApplicationsClick,
                     onQrScannerClick = onQrScannerClick,
+                    onAppointmentsClick = onAppointmentsClick,
+                    onProfileClick = onProfileClick,
                     onLogoutClick = onLogoutClick,
                     modifier = Modifier
                         .weight(1f)
@@ -180,6 +184,8 @@ fun PetsListScreen(
                     QuickActionsRow(
                         onMyApplicationsClick = onMyApplicationsClick,
                         onQrScannerClick = onQrScannerClick,
+                        onAppointmentsClick = onAppointmentsClick,
+                        onProfileClick = onProfileClick,
                         onLogoutClick = onLogoutClick
                     )
                 }
@@ -335,6 +341,8 @@ private fun DashboardContent(
     onRefresh: () -> Unit,
     onMyApplicationsClick: () -> Unit,
     onQrScannerClick: () -> Unit,
+    onAppointmentsClick: () -> Unit,
+    onProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -356,6 +364,8 @@ private fun DashboardContent(
             QuickActionsRow(
                 onMyApplicationsClick = onMyApplicationsClick,
                 onQrScannerClick = onQrScannerClick,
+                onAppointmentsClick = onAppointmentsClick,
+                onProfileClick = onProfileClick,
                 onLogoutClick = onLogoutClick
             )
         }
@@ -493,12 +503,29 @@ private fun HeroCard(
 private fun QuickActionsRow(
     onMyApplicationsClick: () -> Unit,
     onQrScannerClick: () -> Unit,
+    onAppointmentsClick: () -> Unit,
+    onProfileClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-        ActionCardButton(text = "My Applications", modifier = Modifier.weight(1f), onClick = onMyApplicationsClick)
-        ActionCardButton(text = "Scan QR", modifier = Modifier.weight(1f), onClick = onQrScannerClick)
-        ActionCardButton(text = "Logout", modifier = Modifier.weight(1f), onClick = onLogoutClick)
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val compactMode = maxWidth < 640.dp
+        if (compactMode) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                ActionCardButton(text = "My Applications", modifier = Modifier.fillMaxWidth(), onClick = onMyApplicationsClick)
+                ActionCardButton(text = "Profile", modifier = Modifier.fillMaxWidth(), onClick = onProfileClick)
+                ActionCardButton(text = "Appointments", modifier = Modifier.fillMaxWidth(), onClick = onAppointmentsClick)
+                ActionCardButton(text = "Scan QR", modifier = Modifier.fillMaxWidth(), onClick = onQrScannerClick)
+                ActionCardButton(text = "Logout", modifier = Modifier.fillMaxWidth(), onClick = onLogoutClick)
+            }
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                ActionCardButton(text = "My Applications", modifier = Modifier.weight(1f), onClick = onMyApplicationsClick)
+                ActionCardButton(text = "Profile", modifier = Modifier.weight(1f), onClick = onProfileClick)
+                ActionCardButton(text = "Appointments", modifier = Modifier.weight(1f), onClick = onAppointmentsClick)
+                ActionCardButton(text = "Scan QR", modifier = Modifier.weight(1f), onClick = onQrScannerClick)
+                ActionCardButton(text = "Logout", modifier = Modifier.weight(1f), onClick = onLogoutClick)
+            }
+        }
     }
 }
 
@@ -541,17 +568,7 @@ private fun SearchAndFilters(
                 placeholder = { Text("Search pets by name, breed, or description") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                    unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                    focusedBorderColor = Color.White.copy(alpha = 0.8f),
-                    unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                    focusedContainerColor = Color.White.copy(alpha = 0.08f),
-                    unfocusedContainerColor = Color.White.copy(alpha = 0.08f)
-                )
+                colors = AppTextFieldColors()
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -612,14 +629,19 @@ private fun PetPreviewCard(
                         pet.name,
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "${pet.breed} • ${pet.age} • ${pet.gender}",
                         color = Color.White.copy(alpha = 0.74f),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
+
 
                 Surface(
                     modifier = Modifier.border(

@@ -51,11 +51,12 @@ fun PetDetailsScreen(
                 AppTopBar("Pet Details", onBack = onBack)
 
                 if (pet != null) {
+                    val p = pet!!
                     StandardCard {
-                        if (!pet!!.image.isNullOrBlank()) {
+                        if (!p.image.isNullOrBlank()) {
                             AsyncImage(
-                                model = pet!!.image,
-                                contentDescription = pet!!.name,
+                                model = p.image,
+                                contentDescription = p.name,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(220.dp)
@@ -67,13 +68,13 @@ fun PetDetailsScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                         }
 
-                        Text(pet!!.name, style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("${pet!!.breed} • ${pet!!.age} • ${pet!!.gender}", color = Color.White.copy(alpha = 0.75f))
+                        Text(p.name, style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("${p.breed} • ${p.age} • ${p.gender}", color = Color.White.copy(alpha = 0.75f))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(pet!!.description, color = Color.White.copy(alpha = 0.85f))
+                        Text(p.description, color = Color.White.copy(alpha = 0.85f))
                         Spacer(modifier = Modifier.height(8.dp))
-                        InfoText("Health", pet!!.health_status)
-                        InfoText("Status", pet!!.status)
+                        InfoText("Health", p.health_status)
+                        InfoText("Status", p.status)
                     }
                 } else {
                     StandardCard {

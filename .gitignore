@@ -1,0 +1,8 @@
+# temp push ignores
+*.iml
+.gradle/
+.idea/
+**/build/
+local.properties
+gradle/wrapper/dists/
+

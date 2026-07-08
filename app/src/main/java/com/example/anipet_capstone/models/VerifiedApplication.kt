@@ -10,7 +10,7 @@ data class VerifiedApplication(
     val qr_code: String,
     val created_at: String,
     val pet_name: String,
-    val breed: String,
-    val age: String,
-    val gender: String
+    val breed: String?,
+    val age: String?,
+    val gender: String?
 )

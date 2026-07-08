@@ -44,10 +44,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.anipet_capstone.R
 import com.example.anipet_capstone.models.Pet
 import com.example.anipet_capstone.network.ApiClient
@@ -222,7 +224,7 @@ fun PetsListScreen(
                         )
                     }
                 } else {
-                    items(filteredPets) { pet ->
+                    items(filteredPets, key = { pet -> pet.id }) { pet ->
                         PetPreviewCard(
                             pet = pet,
                             onClick = { onPetClick(pet.id) }
@@ -599,7 +601,10 @@ private fun PetPreviewCard(
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (!pet.image.isNullOrBlank()) {
                 AsyncImage(
-                    model = pet.image,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(pet.image)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = pet.name,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -607,8 +612,8 @@ private fun PetPreviewCard(
                         .clip(RoundedCornerShape(22.dp))
                     ,
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                    error = painterResource(R.drawable.ic_launcher_foreground)
+                    placeholder = painterResource(R.drawable.anipet_logo),
+                    error = painterResource(R.drawable.anipet_logo)
                 )
             } else {
                 Box(

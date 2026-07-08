@@ -2,8 +2,6 @@ package com.example.anipet_capstone.screens
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -56,8 +54,8 @@ fun AppointmentsScreen(
                 Text(statusText, color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodyMedium)
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                items(appointments) { appointment ->
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                appointments.forEach { appointment ->
                     StandardCard(title = appointment.title) {
                         if (appointment.appointment_type == "interview") {
                             Text(

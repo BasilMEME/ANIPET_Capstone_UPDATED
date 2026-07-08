@@ -65,7 +65,7 @@ fun QrScannerScreen(
                 val options = ScanOptions().apply {
                     setPrompt("Scan adopter QR code")
                     setBeepEnabled(true)
-                    setOrientationLocked(false)
+                    setOrientationLocked(true)
                 }
                 scannerLauncher.launch(options)
             })
@@ -81,9 +81,9 @@ fun QrScannerScreen(
             StandardCard(title = "Verified Application") {
                 InfoText("Applicant", app.applicant_name)
                 InfoText("Pet", app.pet_name)
-                InfoText("Breed", app.breed)
-                InfoText("Age", app.age)
-                InfoText("Gender", app.gender)
+                InfoText("Breed", app.breed.orEmpty())
+                InfoText("Age", app.age.orEmpty())
+                InfoText("Gender", app.gender.orEmpty())
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Message: ${app.message}", color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(8.dp))

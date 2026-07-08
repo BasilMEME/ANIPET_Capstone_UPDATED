@@ -62,8 +62,8 @@ fun PetDetailsScreen(
                                     .height(220.dp)
                                     .clip(RoundedCornerShape(22.dp)),
                                 contentScale = ContentScale.Crop,
-                                placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                                error = painterResource(R.drawable.ic_launcher_foreground)
+                                placeholder = painterResource(R.drawable.anipet_logo),
+                                error = painterResource(R.drawable.anipet_logo)
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                         }

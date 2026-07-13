@@ -22,6 +22,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.InputStream
+import java.util.Locale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
@@ -109,6 +110,18 @@ fun ApplyAdoptionScreen(
     var idUri by remember { mutableStateOf<android.net.Uri?>(null) }
     var houseUris by remember { mutableStateOf<List<android.net.Uri>>(emptyList()) }
     var termsAccepted by remember { mutableStateOf(false) }
+    var returnPenaltyAmount by remember { mutableStateOf("1000.00") }
+
+    LaunchedEffect(Unit) {
+        try {
+            val policyResponse = ApiClient.api.getReturnPolicy()
+            policyResponse.policy?.computed_penalty?.let { amount ->
+                returnPenaltyAmount = String.format(Locale.getDefault(), "%.2f", amount)
+            }
+        } catch (e: Exception) {
+            // Keep the fallback amount; the terms text still discloses a penalty applies.
+        }
+    }
 
     AppContainer {
         val contentModifier = Modifier
@@ -466,7 +479,7 @@ fun ApplyAdoptionScreen(
                                     message = message,
                                     formData = formDataBody,
                                     termsAccepted = if (termsAccepted) "1" else "0",
-                                    privacyConsent = "I agree to the terms and conditions and consent to the use of my private information solely for the adoption application process.",
+                                    privacyConsent = "I agree to the terms and conditions and consent to the use of my private information solely for the adoption application process. I understand that if I return the adopted pet, a return penalty of ₱$returnPenaltyAmount applies, per shelter policy.",
                                     idDocument = idPart,
                                     housePhotos = houseParts.ifEmpty { null }
                                 )
@@ -496,7 +509,7 @@ fun ApplyAdoptionScreen(
                     Checkbox(checked = termsAccepted, onCheckedChange = { termsAccepted = it })
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "I agree to the terms and conditions and consent to the use of my private information solely for the adoption application process.",
+                        text = "I agree to the terms and conditions and consent to the use of my private information solely for the adoption application process. I understand that if I return the adopted pet, a return penalty of ₱$returnPenaltyAmount applies, per shelter policy.",
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,

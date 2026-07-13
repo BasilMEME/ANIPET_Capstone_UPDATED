@@ -63,6 +63,7 @@ fun PetsListScreen(
     onProfileClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onQrScannerClick: () -> Unit = {},
+    onDonateClick: () -> Unit = {},
     fullName: String = "User"
 ) {
     val scope = rememberCoroutineScope()
@@ -114,9 +115,9 @@ fun PetsListScreen(
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xFF07111F),
-                        Color(0xFF0D1B2A),
-                        Color(0xFF12263A)
+                        Color(0xFF0D1826),
+                        Color(0xFF16233A),
+                        Color(0xFF1E304C)
                     )
                 )
             )
@@ -131,6 +132,7 @@ fun PetsListScreen(
                     availableCount = availableCount,
                     onMyApplicationsClick = onMyApplicationsClick,
                     onQrScannerClick = onQrScannerClick,
+                    onDonateClick = onDonateClick,
                     onLogoutClick = onLogoutClick,
                     onRefresh = { loadPets() },
                     modifier = Modifier
@@ -157,6 +159,7 @@ fun PetsListScreen(
                     onQrScannerClick = onQrScannerClick,
                     onAppointmentsClick = onAppointmentsClick,
                     onProfileClick = onProfileClick,
+                    onDonateClick = onDonateClick,
                     onLogoutClick = onLogoutClick,
                     modifier = Modifier
                         .weight(1f)
@@ -188,6 +191,7 @@ fun PetsListScreen(
                         onQrScannerClick = onQrScannerClick,
                         onAppointmentsClick = onAppointmentsClick,
                         onProfileClick = onProfileClick,
+                        onDonateClick = onDonateClick,
                         onLogoutClick = onLogoutClick
                     )
                 }
@@ -250,6 +254,7 @@ private fun SidebarPanel(
     availableCount: Int,
     onMyApplicationsClick: () -> Unit,
     onQrScannerClick: () -> Unit,
+    onDonateClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier
@@ -280,6 +285,7 @@ private fun SidebarPanel(
                 Text("Navigation", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 SidebarActionButton(text = "My Applications", onClick = onMyApplicationsClick)
                 SidebarActionButton(text = "Scan QR", onClick = onQrScannerClick)
+                SidebarActionButton(text = "Donate", onClick = onDonateClick)
                 SidebarActionButton(text = "Logout", onClick = onLogoutClick)
             }
         }
@@ -345,6 +351,7 @@ private fun DashboardContent(
     onQrScannerClick: () -> Unit,
     onAppointmentsClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onDonateClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -368,6 +375,7 @@ private fun DashboardContent(
                 onQrScannerClick = onQrScannerClick,
                 onAppointmentsClick = onAppointmentsClick,
                 onProfileClick = onProfileClick,
+                onDonateClick = onDonateClick,
                 onLogoutClick = onLogoutClick
             )
         }
@@ -455,8 +463,8 @@ private fun HeroCard(
                 .background(
                     Brush.linearGradient(
                         listOf(
-                            Color(0xFF7EE8FA).copy(alpha = 0.28f),
-                            Color(0xFF2B5876).copy(alpha = 0.22f),
+                            Color(0xFFF2867E).copy(alpha = 0.28f),
+                            Color(0xFFF6C9A0).copy(alpha = 0.22f),
                             Color.Transparent
                         )
                     )
@@ -507,6 +515,7 @@ private fun QuickActionsRow(
     onQrScannerClick: () -> Unit,
     onAppointmentsClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onDonateClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -517,6 +526,7 @@ private fun QuickActionsRow(
                 ActionCardButton(text = "Profile", modifier = Modifier.fillMaxWidth(), onClick = onProfileClick)
                 ActionCardButton(text = "Appointments", modifier = Modifier.fillMaxWidth(), onClick = onAppointmentsClick)
                 ActionCardButton(text = "Scan QR", modifier = Modifier.fillMaxWidth(), onClick = onQrScannerClick)
+                ActionCardButton(text = "Donate", modifier = Modifier.fillMaxWidth(), onClick = onDonateClick)
                 ActionCardButton(text = "Logout", modifier = Modifier.fillMaxWidth(), onClick = onLogoutClick)
             }
         } else {
@@ -525,6 +535,7 @@ private fun QuickActionsRow(
                 ActionCardButton(text = "Profile", modifier = Modifier.weight(1f), onClick = onProfileClick)
                 ActionCardButton(text = "Appointments", modifier = Modifier.weight(1f), onClick = onAppointmentsClick)
                 ActionCardButton(text = "Scan QR", modifier = Modifier.weight(1f), onClick = onQrScannerClick)
+                ActionCardButton(text = "Donate", modifier = Modifier.weight(1f), onClick = onDonateClick)
                 ActionCardButton(text = "Logout", modifier = Modifier.weight(1f), onClick = onLogoutClick)
             }
         }

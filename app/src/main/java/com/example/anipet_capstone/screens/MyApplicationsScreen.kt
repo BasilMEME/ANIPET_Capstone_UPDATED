@@ -210,9 +210,18 @@ fun MyApplicationsScreen(
                                 PrimaryButton("Request Return", onClick = {
                                     selectedReturnApplication = app
                                     returnReason = ""
-                                    penaltyAmount = "1000.00"
                                     returnStatusText = ""
                                     showReturnDialog = true
+                                    scope.launch {
+                                        try {
+                                            val policyResponse = ApiClient.api.getReturnPolicy()
+                                            policyResponse.policy?.computed_penalty?.let { amount ->
+                                                penaltyAmount = String.format(Locale.getDefault(), "%.2f", amount)
+                                            }
+                                        } catch (e: Exception) {
+                                            // Keep the fallback amount; server still authoritatively computes the real charge.
+                                        }
+                                    }
                                 })
                             }
 

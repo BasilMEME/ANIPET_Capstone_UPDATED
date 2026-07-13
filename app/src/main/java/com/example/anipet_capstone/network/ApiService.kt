@@ -20,6 +20,7 @@ import retrofit2.http.Part
 import retrofit2.http.Query
 import com.example.anipet_capstone.models.QrVerifyResponse
 import com.example.anipet_capstone.models.OtpResponse
+import com.example.anipet_capstone.models.ReturnPolicyResponse
 
 interface ApiService {
 
@@ -124,6 +125,9 @@ interface ApiService {
         @Part idDocument: MultipartBody.Part?,
         @Part housePhotos: List<MultipartBody.Part>?
     ): ApplyResponse
+
+    @GET("get_return_policy.php")
+    suspend fun getReturnPolicy(): ReturnPolicyResponse
 
     @FormUrlEncoded
     @POST("request_return.php")

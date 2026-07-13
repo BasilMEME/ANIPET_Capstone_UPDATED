@@ -17,6 +17,7 @@ import com.example.anipet_capstone.screens.ApplyAdoptionScreen
 import com.example.anipet_capstone.screens.AppointmentsScreen
 import com.example.anipet_capstone.screens.ApplicationTrackingScreen
 import com.example.anipet_capstone.screens.BookAppointmentScreen
+import com.example.anipet_capstone.screens.DonateScreen
 import com.example.anipet_capstone.screens.LoginScreen
 import com.example.anipet_capstone.screens.MyApplicationsScreen
 import com.example.anipet_capstone.screens.PetDetailsScreen
@@ -37,6 +38,7 @@ sealed class Screen(val route: String) {
     object Appointments : Screen("appointments")
     object BookAppointment : Screen("book_appointment")
     object QrScanner : Screen("qr_scanner")
+    object Donate : Screen("donate")
     object ApplicationTracking : Screen("application_tracking/{applicationId}") {
         fun createRoute(applicationId: String) = "application_tracking/$applicationId"
     }
@@ -180,6 +182,9 @@ class MainActivity : ComponentActivity() {
                             onQrScannerClick = {
                                 navController.navigate(Screen.QrScanner.route)
                             },
+                            onDonateClick = {
+                                navController.navigate(Screen.Donate.route)
+                            },
                             fullName = getFullName(context) ?: "User"
                         )
                     }
@@ -249,6 +254,12 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.QrScanner.route) {
                         QrScannerScreen(
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable(Screen.Donate.route) {
+                        DonateScreen(
                             onBack = { navController.popBackStack() }
                         )
                     }

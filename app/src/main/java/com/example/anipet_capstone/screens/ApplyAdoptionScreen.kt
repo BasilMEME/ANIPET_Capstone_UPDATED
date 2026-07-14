@@ -225,7 +225,7 @@ fun ApplyAdoptionScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = birthDate, onValueChange = { birthDate = it }, label = { Text("Birth Date*") }, modifier = Modifier.weight(1f), placeholder = { Text("YYYY-MM-DD") })
+                        DateField(value = birthDate, onValueChange = { birthDate = it }, label = "Birth Date*", modifier = Modifier.weight(1f))
                         OutlinedTextField(value = occupation, onValueChange = { occupation = it }, label = { Text("Occupation") }, modifier = Modifier.weight(1f))
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -320,7 +320,7 @@ fun ApplyAdoptionScreen(
 
                 StandardCard(title = "Interview & Visitation") {
                     if (interactionMethod == "Zoom") {
-                        OutlinedTextField(value = preferredDate, onValueChange = { preferredDate = it }, label = { Text("Preferred Zoom date*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("YYYY-MM-DD") })
+                        DateField(value = preferredDate, onValueChange = { preferredDate = it }, label = "Preferred Zoom date*", modifier = Modifier.fillMaxWidth())
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(value = preferredTime, onValueChange = { preferredTime = it }, label = { Text("Preferred Zoom time*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("HH:MM AM/PM") })
                     } else {

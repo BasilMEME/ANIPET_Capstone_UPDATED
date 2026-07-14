@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.R
 import com.example.anipet_capstone.network.ApiClient
@@ -128,7 +127,7 @@ fun LoginScreen(
 
             if (statusText.isNotBlank()) {
                 StandardCard {
-                    Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+                    Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                 }
             }
 

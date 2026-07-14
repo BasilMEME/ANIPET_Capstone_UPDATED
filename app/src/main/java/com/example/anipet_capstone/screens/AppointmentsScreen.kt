@@ -51,7 +51,7 @@ fun AppointmentsScreen(
 
         if (appointments.isEmpty()) {
             StandardCard {
-                Text(statusText, color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodyMedium)
+                Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f), style = MaterialTheme.typography.bodyMedium)
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {

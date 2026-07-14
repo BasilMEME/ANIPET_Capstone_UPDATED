@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.network.ApiClient
@@ -90,7 +89,7 @@ fun BookAppointmentScreen(
 
         if (statusText.isNotBlank()) {
             StandardCard {
-                Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodyMedium)
+                Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodyMedium)
             }
         }
 

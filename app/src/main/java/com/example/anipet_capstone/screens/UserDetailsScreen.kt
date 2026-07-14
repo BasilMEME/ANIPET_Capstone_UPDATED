@@ -21,6 +21,12 @@ import com.example.anipet_capstone.network.ApiClient
 import com.example.anipet_capstone.models.UserProfileResponse
 import kotlinx.coroutines.launch
 
+private val UdNavy = Color(0xFF1B2A41)
+private val UdNavyMuted = Color(0xFF6B7A90)
+private val UdCoral = Color(0xFFF2867E)
+private val UdCardBg = Color(0xFFFFFFFF)
+private val UdCardBorder = UdCoral.copy(alpha = 0.16f)
+
 @Composable
 fun UserDetailsScreen(
     onBack: () -> Unit = {}
@@ -52,14 +58,14 @@ fun UserDetailsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
+            .background(Color(0xFFFFFBFA))
             .verticalScroll(rememberScrollState())
     ) {
         // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF2D2D2D))
+                .background(UdCoral)
                 .padding(16.dp)
         ) {
             Row(
@@ -74,7 +80,7 @@ fun UserDetailsScreen(
                     color = Color.White
                 )
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFFFF6B6B))
+                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
                 }
             }
         }
@@ -86,18 +92,18 @@ fun UserDetailsScreen(
                     .padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Color(0xFFFF6B6B))
+                CircularProgressIndicator(color = UdCoral)
             }
         } else if (errorMessage.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .background(Color(0xFF8B0000), shape = RoundedCornerShape(8.dp))
+                    .background(Color(0xFFFDECEA), shape = RoundedCornerShape(8.dp))
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(errorMessage, color = Color.White, fontSize = 14.sp)
+                Text(errorMessage, color = Color(0xFFB3261E), fontSize = 14.sp)
             }
         } else if (profileData?.user != null) {
             val user = profileData!!.user!!
@@ -110,8 +116,9 @@ fun UserDetailsScreen(
                     .fillMaxWidth()
                     .padding(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF2D2D2D)
+                    containerColor = UdCardBg
                 ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, UdCardBorder),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -119,20 +126,20 @@ fun UserDetailsScreen(
                         user.full_name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = UdNavy
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         "@${user.username ?: "user"}",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = UdNavyMuted
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        StatusChip("Member", Color(0xFFFF6B6B))
+                        StatusChip("Member", UdCoral)
                         if (user.role == "admin") {
                             StatusChip("Admin", Color(0xFF4CAF50))
                         }
@@ -200,8 +207,9 @@ fun ProfileSection(
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2D2D2D)
+            containerColor = UdCardBg
         ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, UdCardBorder),
         shape = RoundedCornerShape(10.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -209,7 +217,7 @@ fun ProfileSection(
                 title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFFF6B6B)
+                color = UdCoral
             )
             Spacer(modifier = Modifier.height(12.dp))
             content()
@@ -223,14 +231,14 @@ fun ProfileInfoRow(label: String, value: String) {
         Text(
             label,
             fontSize = 12.sp,
-            color = Color.Gray,
+            color = UdNavyMuted,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             value,
             fontSize = 14.sp,
-            color = Color.White
+            color = UdNavy
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -241,7 +249,7 @@ fun StatusChip(label: String, bgColor: Color) {
     Surface(
         modifier = Modifier.padding(4.dp),
         shape = RoundedCornerShape(6.dp),
-        color = bgColor.copy(alpha = 0.2f),
+        color = bgColor.copy(alpha = 0.15f),
         border = androidx.compose.foundation.BorderStroke(1.dp, bgColor)
     ) {
         Text(

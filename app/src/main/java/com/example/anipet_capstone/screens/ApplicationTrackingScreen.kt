@@ -97,7 +97,7 @@ fun ApplicationTrackingScreen(
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFFFF6B6B)
+                containerColor = Color(0xFFF2867E)
             )
         )
 

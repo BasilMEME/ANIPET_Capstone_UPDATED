@@ -80,6 +80,16 @@ interface ApiService {
         @Query("user_id") userId: String
     ): UserProfileResponse
 
+    @FormUrlEncoded
+    @POST("update_user_profile.php")
+    suspend fun updateUserProfile(
+        @Field("user_id") userId: String,
+        @Field("full_name") fullName: String,
+        @Field("phone") phone: String,
+        @Field("address") address: String,
+        @Field("contact_preference") contactPreference: String
+    ): UserProfileResponse
+
     @GET("get_appointments.php")
     suspend fun getAppointments(
         @Query("user_id") userId: String

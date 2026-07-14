@@ -48,7 +48,9 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun ANIPET_CapstoneTheme(
-    darkTheme: Boolean = true,
+    // AniPet's brand identity (per anipet_logo.jpg) is a white background with
+    // coral/navy accents, so the app defaults to the light scheme everywhere.
+    darkTheme: Boolean = false,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit

@@ -23,10 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -54,6 +57,15 @@ import com.example.anipet_capstone.R
 import com.example.anipet_capstone.models.Pet
 import com.example.anipet_capstone.network.ApiClient
 import kotlinx.coroutines.launch
+
+// AniPet brand tokens (from anipet_logo.jpg): white background, coral/salmon accent, navy text.
+private val Navy = Color(0xFF1B2A41)
+private val NavyMuted = Color(0xFF6B7A90)
+private val Coral = Color(0xFFF2867E)
+private val CoralDark = Color(0xFFE56F66)
+private val Peach = Color(0xFFF6C9A0)
+private val CardBg = Color(0xFFFFFFFF)
+private val CoralBorder = Coral.copy(alpha = 0.18f)
 
 @Composable
 fun PetsListScreen(
@@ -115,9 +127,9 @@ fun PetsListScreen(
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xFF0D1826),
-                        Color(0xFF16233A),
-                        Color(0xFF1E304C)
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFF7F5),
+                        Color(0xFFFCEAE6)
                     )
                 )
             )
@@ -239,7 +251,7 @@ fun PetsListScreen(
                 item {
                     Text(
                         text = statusText,
-                        color = Color.White.copy(alpha = 0.75f),
+                        color = NavyMuted,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -273,16 +285,16 @@ private fun SidebarPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
-                    BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                    BorderStroke(1.dp, CoralBorder),
                     RoundedCornerShape(28.dp)
                 ),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.elevatedCardColors(
-                containerColor = Color.White.copy(alpha = 0.08f)
+                containerColor = CardBg
             )
         ) {
             Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Navigation", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text("Navigation", color = Navy, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 SidebarActionButton(text = "My Applications", onClick = onMyApplicationsClick)
                 SidebarActionButton(text = "Scan QR", onClick = onQrScannerClick)
                 SidebarActionButton(text = "Donate", onClick = onDonateClick)
@@ -294,16 +306,23 @@ private fun SidebarPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
-                    BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                    BorderStroke(1.dp, CoralBorder),
                     RoundedCornerShape(28.dp)
                 ),
             shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.06f))
+            colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
         ) {
             Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Today", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Text("Browse adoptable pets, send applications, and track your adoption journey.", color = Color.White.copy(alpha = 0.75f))
-                AssistChip(onClick = onRefresh, label = { Text("Refresh feed") })
+                Text("Today", color = Navy, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text("Browse adoptable pets, send applications, and track your adoption journey.", color = NavyMuted)
+                AssistChip(
+                    onClick = onRefresh,
+                    label = { Text("Refresh feed") },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Coral.copy(alpha = 0.10f),
+                        labelColor = Navy
+                    )
+                )
             }
         }
     }
@@ -322,11 +341,12 @@ private fun UserHeaderRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text("Welcome back", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelLarge)
-            Text("$fullName", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("Welcome back", color = NavyMuted, style = MaterialTheme.typography.labelLarge)
+            Text("$fullName", color = Navy, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
         Button(
             onClick = onLogoutClick,
+            colors = ButtonDefaults.buttonColors(containerColor = Coral, contentColor = Color.White),
             modifier = Modifier.padding(start = 12.dp)
         ) {
             Text("Logout")
@@ -408,7 +428,7 @@ private fun DashboardContent(
             if (featuredPet == null) {
                 EmptyStateCard(
                     title = "No featured pet",
-                    description = "Try refreshing the feed after confirming the backend has pets." 
+                    description = "Try refreshing the feed after confirming the backend has pets."
                 )
             } else {
                 PetPreviewCard(pet = featuredPet, onClick = { onPetClick(featuredPet.id) })
@@ -451,11 +471,11 @@ private fun HeroCard(
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(32.dp)
             ),
         shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.08f))
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
     ) {
         Box(
             modifier = Modifier
@@ -463,24 +483,24 @@ private fun HeroCard(
                 .background(
                     Brush.linearGradient(
                         listOf(
-                            Color(0xFFF2867E).copy(alpha = 0.28f),
-                            Color(0xFFF6C9A0).copy(alpha = 0.22f),
+                            Coral.copy(alpha = 0.16f),
+                            Peach.copy(alpha = 0.18f),
                             Color.Transparent
                         )
                     )
                 )
         ) {
             Column(modifier = Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("AniPet", color = Color.White.copy(alpha = 0.78f), style = MaterialTheme.typography.labelLarge)
+                Text("AniPet", color = Coral, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                 Text(
                     text = "Welcome, $fullName",
-                    color = Color.White,
+                    color = Navy,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "Discover adoptable pets, submit an application, and track your adoption workflow.",
-                    color = Color.White.copy(alpha = 0.78f),
+                    color = NavyMuted,
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -490,15 +510,18 @@ private fun HeroCard(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Button(onClick = onRefresh) { Text("Refresh Pets") }
+                    Button(
+                        onClick = onRefresh,
+                        colors = ButtonDefaults.buttonColors(containerColor = Coral, contentColor = Color.White)
+                    ) { Text("Refresh Pets") }
                     Surface(
                         shape = RoundedCornerShape(999.dp),
-                        color = Color.White.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.14f))
+                        color = Navy.copy(alpha = 0.08f),
+                        border = BorderStroke(1.dp, Navy.copy(alpha = 0.10f))
                     ) {
                         Text(
                             text = "$availableCount pets ready for adoption",
-                            color = Color.White,
+                            color = Navy,
                             style = MaterialTheme.typography.labelLarge,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
                         )
@@ -566,14 +589,14 @@ private fun SearchAndFilters(
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(28.dp)
             ),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.07f))
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
     ) {
         Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text("Search & Filter", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Search & Filter", color = Navy, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
 
             OutlinedTextField(
                 value = searchQuery,
@@ -585,9 +608,18 @@ private fun SearchAndFilters(
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                FilterChip(selected = selectedFilter == "All", onClick = { onFilterSelected("All") }, label = { Text("All") })
-                FilterChip(selected = selectedFilter == "Available", onClick = { onFilterSelected("Available") }, label = { Text("Available") })
-                FilterChip(selected = selectedFilter == "Healthy", onClick = { onFilterSelected("Healthy") }, label = { Text("Healthy") })
+                FilterChip(
+                    selected = selectedFilter == "All", onClick = { onFilterSelected("All") }, label = { Text("All") },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Coral, selectedLabelColor = Color.White)
+                )
+                FilterChip(
+                    selected = selectedFilter == "Available", onClick = { onFilterSelected("Available") }, label = { Text("Available") },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Coral, selectedLabelColor = Color.White)
+                )
+                FilterChip(
+                    selected = selectedFilter == "Healthy", onClick = { onFilterSelected("Healthy") }, label = { Text("Healthy") },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Coral, selectedLabelColor = Color.White)
+                )
             }
         }
     }
@@ -603,11 +635,11 @@ private fun PetPreviewCard(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(28.dp)
             ),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.08f))
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (!pet.image.isNullOrBlank()) {
@@ -632,10 +664,10 @@ private fun PetPreviewCard(
                         .fillMaxWidth()
                         .height(210.dp)
                         .clip(RoundedCornerShape(22.dp))
-                        .background(Color.DarkGray),
+                        .background(Peach.copy(alpha = 0.35f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No image", color = Color.White.copy(alpha = 0.75f))
+                    Text("No image", color = Navy.copy(alpha = 0.6f))
                 }
             }
 
@@ -643,7 +675,7 @@ private fun PetPreviewCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         pet.name,
-                        color = Color.White,
+                        color = Navy,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -651,7 +683,7 @@ private fun PetPreviewCard(
                     )
                     Text(
                         text = "${pet.breed.orEmpty()} • ${pet.age.orEmpty()} • ${pet.gender.orEmpty()}",
-                        color = Color.White.copy(alpha = 0.74f),
+                        color = NavyMuted,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -660,12 +692,8 @@ private fun PetPreviewCard(
 
 
                 Surface(
-                    modifier = Modifier.border(
-                        BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
-                        RoundedCornerShape(999.dp)
-                    ),
                     shape = RoundedCornerShape(999.dp),
-                    color = if (pet.status.equals("available", ignoreCase = true)) Color(0xFF1B998B).copy(alpha = 0.22f) else Color(0xFF8B5CF6).copy(alpha = 0.20f)
+                    color = if (pet.status.equals("available", ignoreCase = true)) Color(0xFF1B998B) else Color(0xFF8B5CF6)
                 ) {
                     Text(
                         text = pet.status.orEmpty(),
@@ -678,7 +706,7 @@ private fun PetPreviewCard(
 
             Text(
                 text = pet.description.orEmpty(),
-                color = Color.White.copy(alpha = 0.82f),
+                color = Navy.copy(alpha = 0.82f),
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -700,15 +728,15 @@ private fun EmptyStateCard(
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(28.dp)
             ),
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.06f))
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
     ) {
         Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(title, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text(description, color = Color.White.copy(alpha = 0.72f))
+            Text(title, color = Navy, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(description, color = NavyMuted)
         }
     }
 }
@@ -716,8 +744,8 @@ private fun EmptyStateCard(
 @Composable
 private fun SectionHeader(title: String, subtitle: String) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(title, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text(subtitle, color = Color.White.copy(alpha = 0.72f), style = MaterialTheme.typography.bodyMedium)
+        Text(title, color = Navy, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(subtitle, color = NavyMuted, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -726,15 +754,15 @@ private fun MetricCard(label: String, value: String, modifier: Modifier = Modifi
     ElevatedCard(
         modifier = modifier
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(24.dp)
             ),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White.copy(alpha = 0.07f))
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBg)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(label, color = Color.White.copy(alpha = 0.70f), style = MaterialTheme.typography.labelLarge)
-            Text(value, color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(label, color = NavyMuted, style = MaterialTheme.typography.labelLarge)
+            Text(value, color = Coral, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -744,16 +772,16 @@ private fun ActionCardButton(text: String, modifier: Modifier = Modifier, onClic
     Surface(
         modifier = modifier
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(22.dp)
             )
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(22.dp),
-        color = Color.White.copy(alpha = 0.10f)
+        color = Coral.copy(alpha = 0.10f)
     ) {
         Text(
             text = text,
-            color = Color.White,
+            color = CoralDark,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)
@@ -767,16 +795,16 @@ private fun SidebarActionButton(text: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                BorderStroke(1.dp, CoralBorder),
                 RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        color = Color.White.copy(alpha = 0.10f)
+        color = Coral.copy(alpha = 0.10f)
     ) {
         Text(
             text = text,
-            color = Color.White,
+            color = CoralDark,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
         )
@@ -787,15 +815,15 @@ private fun SidebarActionButton(text: String, onClick: () -> Unit) {
 private fun StatPill(label: String, value: String) {
     Surface(
         modifier = Modifier.border(
-            BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+            BorderStroke(1.dp, CoralBorder),
             RoundedCornerShape(999.dp)
         ),
         shape = RoundedCornerShape(999.dp),
-        color = Color.White.copy(alpha = 0.11f)
+        color = Coral.copy(alpha = 0.12f)
     ) {
         Text(
             text = "$label: $value",
-            color = Color.White,
+            color = CoralDark,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
         )
@@ -806,15 +834,15 @@ private fun StatPill(label: String, value: String) {
 private fun InfoPill(label: String, value: String) {
     Surface(
         modifier = Modifier.border(
-            BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+            BorderStroke(1.dp, CoralBorder),
             RoundedCornerShape(999.dp)
         ),
         shape = RoundedCornerShape(999.dp),
-        color = Color.White.copy(alpha = 0.08f)
+        color = Navy.copy(alpha = 0.05f)
     ) {
         Text(
             text = "$label: $value",
-            color = Color.White.copy(alpha = 0.86f),
+            color = Navy.copy(alpha = 0.86f),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
         )

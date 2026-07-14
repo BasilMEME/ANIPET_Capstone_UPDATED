@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
@@ -68,17 +67,17 @@ fun PetDetailsScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                         }
 
-                        Text(p.name, style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("${p.breed.orEmpty()} • ${p.age.orEmpty()} • ${p.gender.orEmpty()}", color = Color.White.copy(alpha = 0.75f))
+                        Text(p.name, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                        Text("${p.breed.orEmpty()} • ${p.age.orEmpty()} • ${p.gender.orEmpty()}", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(p.description.orEmpty(), color = Color.White.copy(alpha = 0.85f))
+                        Text(p.description.orEmpty(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f))
                         Spacer(modifier = Modifier.height(8.dp))
                         InfoText("Health", p.health_status.orEmpty())
                         InfoText("Status", p.status.orEmpty())
                     }
                 } else {
                     StandardCard {
-                        Text(statusText, color = Color.White.copy(alpha = 0.75f))
+                        Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f))
                     }
                 }
 

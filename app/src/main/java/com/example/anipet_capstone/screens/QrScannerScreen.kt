@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.anipet_capstone.models.VerifiedApplication
 import com.example.anipet_capstone.network.ApiClient
@@ -59,7 +58,7 @@ fun QrScannerScreen(
         AppTopBar("QR Scanner", onBack = onBack)
 
         StandardCard(title = "Adoption Verification") {
-            Text("Scan the adopter's QR code to verify their application.", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+            Text("Scan the adopter's QR code to verify their application.", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(12.dp))
             PrimaryButton("Scan QR Code", onClick = {
                 val options = ScanOptions().apply {
@@ -73,7 +72,7 @@ fun QrScannerScreen(
 
         if (statusText.isNotBlank()) {
             StandardCard {
-                Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+                Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -85,7 +84,7 @@ fun QrScannerScreen(
                 InfoText("Age", app.age.orEmpty())
                 InfoText("Gender", app.gender.orEmpty())
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Message: ${app.message}", color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+                Text("Message: ${app.message}", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(8.dp))
                 InfoText("Status", app.status)
                 InfoText("Date", app.created_at)

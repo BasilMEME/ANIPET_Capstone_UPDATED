@@ -50,7 +50,7 @@ fun MyApplicationsScreen(
         AppContainer {
             AppTopBar("My Applications", onBack = onBack)
             StandardCard {
-                Text("User not logged in. Please log in to view your applications.", color = ComposeColor.White.copy(alpha = 0.75f))
+                Text("User not logged in. Please log in to view your applications.", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f))
             }
             SecondaryButton("Back", onClick = onBack)
         }
@@ -93,7 +93,7 @@ fun MyApplicationsScreen(
                 StandardCard {
                     Text(
                         "No applications yet. Start by browsing and applying for adoptable pets.",
-                        color = ComposeColor.White.copy(alpha = 0.75f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
                     )
                 }
             } else {
@@ -104,7 +104,7 @@ fun MyApplicationsScreen(
                 StandardCard(title = "Application Summary") {
                     Text(
                         "Pending: $pendingCount • Approved: $approvedCount • Rejected: $rejectedCount",
-                        color = ComposeColor.White.copy(alpha = 0.85f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -119,7 +119,7 @@ fun MyApplicationsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(140.dp)
-                                        .background(ComposeColor(0xFF2D2D2D), shape = RoundedCornerShape(8.dp))
+                                        .background(ComposeColor(0xFFFCEAE6), shape = RoundedCornerShape(8.dp))
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
@@ -129,7 +129,7 @@ fun MyApplicationsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 "Message: ${app.message}",
-                                color = ComposeColor.White.copy(alpha = 0.85f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                                 style = MaterialTheme.typography.bodySmall,
                                 maxLines = 2
                             )
@@ -142,13 +142,13 @@ fun MyApplicationsScreen(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(ComposeColor(0xFF2D2D2D), shape = RoundedCornerShape(8.dp))
+                                        .background(ComposeColor(0xFFFCEAE6), shape = RoundedCornerShape(8.dp))
                                         .padding(12.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
                                         "Adoption Tracking QR",
-                                        color = ComposeColor.White.copy(alpha = 0.9f),
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.sp
                                     )
@@ -161,7 +161,7 @@ fun MyApplicationsScreen(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         "Show this QR when visiting the shelter",
-                                        color = ComposeColor.White.copy(alpha = 0.65f),
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                                         fontSize = 10.sp
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -174,14 +174,14 @@ fun MyApplicationsScreen(
                                         Column(modifier = Modifier.padding(12.dp)) {
                                             Text(
                                                 "💚 Support AniPet",
-                                                color = ComposeColor.White,
+                                                color = MaterialTheme.colorScheme.onSurface,
                                                 fontSize = 11.sp,
                                                 fontWeight = FontWeight.SemiBold
                                             )
                                             Spacer(modifier = Modifier.height(4.dp))
                                             Text(
                                                 "Scan QR Ph code to donate via GCash/PayMaya",
-                                                color = ComposeColor.White.copy(alpha = 0.7f),
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                                 fontSize = 9.sp
                                             )
                                         }
@@ -192,7 +192,7 @@ fun MyApplicationsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 "Date: ${app.created_at}",
-                                color = ComposeColor.White.copy(alpha = 0.65f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                                 style = MaterialTheme.typography.labelSmall
                             )
 
@@ -261,12 +261,12 @@ fun MyApplicationsScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 "A standard return penalty of ₱$penaltyAmount applies, per shelter policy.",
-                                color = ComposeColor.White.copy(alpha = 0.75f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             if (returnStatusText.isNotBlank()) {
                                 Spacer(modifier = Modifier.height(12.dp))
-                                Text(returnStatusText, color = ComposeColor.White.copy(alpha = 0.85f))
+                                Text(returnStatusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f))
                             }
                         }
                     },

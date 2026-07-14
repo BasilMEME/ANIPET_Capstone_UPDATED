@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import com.example.anipet_capstone.network.ApiClient
 import kotlinx.coroutines.launch
 
@@ -33,7 +32,7 @@ fun OtpScreen(
             AppTopBar("Verify OTP", onBack = onBack)
 
             StandardCard(title = "Enter Code") {
-                Text("A verification code has been sent to your email.", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+                Text("A verification code has been sent to your email.", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
                 OutlinedTextField(
                     value = otp,
                     onValueChange = { otp = it },
@@ -80,7 +79,7 @@ fun OtpScreen(
 
             if (statusText.isNotBlank()) {
                 StandardCard {
-                    Text(statusText, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+                    Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                 }
             }
 

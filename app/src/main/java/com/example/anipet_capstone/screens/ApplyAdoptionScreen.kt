@@ -2,6 +2,13 @@ package com.example.anipet_capstone.screens
 
 import androidx.compose.foundation.layout.*
 // Removed unused Button/OutlinedButton imports
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.OutlinedTextField
@@ -11,11 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -63,6 +74,9 @@ fun ApplyAdoptionScreen(
     val interactionOptions = listOf("Email", "Phone", "Zoom")
     var zoomDetails by remember { mutableStateOf("") }
     var profileLoadError by remember { mutableStateOf("") }
+
+    // True after the first failed submit attempt, turns on the red per-field indicators.
+    var showErrors by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId) {
         if (userId.isNotBlank()) {
@@ -123,6 +137,24 @@ fun ApplyAdoptionScreen(
         }
     }
 
+    val isMinorApplicant = remember(birthDate) {
+        try {
+            val parts = birthDate.split("-")
+            if (parts.size == 3) {
+                val dob = java.util.Calendar.getInstance().apply {
+                    set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                }
+                val today = java.util.Calendar.getInstance()
+                var age = today.get(java.util.Calendar.YEAR) - dob.get(java.util.Calendar.YEAR)
+                if (today.get(java.util.Calendar.DAY_OF_YEAR) < dob.get(java.util.Calendar.DAY_OF_YEAR)) age--
+                age < 18
+            } else false
+        } catch (e: Exception) {
+            false
+        }
+    }
+    val altSuffix = if (isMinorApplicant) "*" else ""
+
     AppContainer {
         val contentModifier = Modifier
             .fillMaxWidth()
@@ -141,12 +173,12 @@ fun ApplyAdoptionScreen(
                 StandardCard(title = "Applicant's Info") {
                     OutlinedTextField(value = applicantName, onValueChange = {}, label = { Text("Name*") }, modifier = Modifier.fillMaxWidth(), enabled = false)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    RequiredTextField(
                         value = address,
-                        onValueChange = {},
-                        label = { Text("Registered Address") },
+                        onValueChange = { address = it },
+                        label = "Address*",
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = false
+                        showError = showErrors
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -172,11 +204,12 @@ fun ApplyAdoptionScreen(
                         Text("Phone", color = MaterialTheme.colorScheme.onSurface)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    RequiredTextField(
                         value = phone,
                         onValueChange = { phone = it },
-                        label = { Text("Phone Number*") },
-                        modifier = Modifier.fillMaxWidth()
+                        label = "Phone Number*",
+                        modifier = Modifier.fillMaxWidth(),
+                        showError = showErrors
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(modifier = Modifier.fillMaxWidth()) {
@@ -211,12 +244,13 @@ fun ApplyAdoptionScreen(
                     }
                     if (interactionMethod == "Zoom") {
                         Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
+                        RequiredTextField(
                             value = zoomDetails,
                             onValueChange = { zoomDetails = it },
-                            label = { Text("Zoom meeting details*") },
+                            label = "Zoom meeting details*",
                             modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Link, meeting ID, or Zoom email") }
+                            placeholder = "Link, meeting ID, or Zoom email",
+                            showError = showErrors
                         )
                     }
                     if (profileLoadError.isNotBlank()) {
@@ -225,40 +259,22 @@ fun ApplyAdoptionScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        DateField(value = birthDate, onValueChange = { birthDate = it }, label = "Birth Date*", modifier = Modifier.weight(1f))
+                        DateField(value = birthDate, onValueChange = { birthDate = it }, label = "Birth Date*", modifier = Modifier.weight(1f), isError = showErrors && birthDate.isBlank())
                         OutlinedTextField(value = occupation, onValueChange = { occupation = it }, label = { Text("Occupation") }, modifier = Modifier.weight(1f))
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = company, onValueChange = { company = it }, label = { Text("Company/Business Name*") }, modifier = Modifier.fillMaxWidth())
+                    RequiredTextField(value = company, onValueChange = { company = it }, label = "Company/Business Name*", modifier = Modifier.fillMaxWidth(), showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(value = socialProfile, onValueChange = { socialProfile = it }, label = { Text("Social Media Profile") }, modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = status, onValueChange = { status = it }, label = { Text("Status*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Single, Married, Other") })
+                    RequiredTextField(value = status, onValueChange = { status = it }, label = "Status*", modifier = Modifier.fillMaxWidth(), placeholder = "Single, Married, Other", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = pronouns, onValueChange = { pronouns = it }, label = { Text("Pronouns*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("She/her, He/him, They/them") })
+                    RequiredTextField(value = pronouns, onValueChange = { pronouns = it }, label = "Pronouns*", modifier = Modifier.fillMaxWidth(), placeholder = "She/her, He/him, They/them", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = promptedBy, onValueChange = { promptedBy = it }, label = { Text("What prompted you to adopt?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Friends, Website, Social Media, Other") })
+                    RequiredTextField(value = promptedBy, onValueChange = { promptedBy = it }, label = "What prompted you to adopt?*", modifier = Modifier.fillMaxWidth(), placeholder = "Friends, Website, Social Media, Other", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = adoptedBefore, onValueChange = { adoptedBefore = it }, label = { Text("Have you adopted before?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = adoptedBefore, onValueChange = { adoptedBefore = it }, label = "Have you adopted before?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                 }
-
-                val isMinorApplicant = remember(birthDate) {
-                    try {
-                        val parts = birthDate.split("-")
-                        if (parts.size == 3) {
-                            val dob = java.util.Calendar.getInstance().apply {
-                                set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
-                            }
-                            val today = java.util.Calendar.getInstance()
-                            var age = today.get(java.util.Calendar.YEAR) - dob.get(java.util.Calendar.YEAR)
-                            if (today.get(java.util.Calendar.DAY_OF_YEAR) < dob.get(java.util.Calendar.DAY_OF_YEAR)) age--
-                            age < 18
-                        } else false
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-                val altSuffix = if (isMinorApplicant) "*" else ""
 
                 StandardCard(title = "Alternate Contact") {
                     if (isMinorApplicant) {
@@ -269,60 +285,57 @@ fun ApplyAdoptionScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
-                    OutlinedTextField(value = altName, onValueChange = { altName = it }, label = { Text("Name$altSuffix") }, modifier = Modifier.fillMaxWidth())
+                    RequiredTextField(value = altName, onValueChange = { altName = it }, label = "Name$altSuffix", modifier = Modifier.fillMaxWidth(), showError = showErrors && isMinorApplicant)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = altRelation, onValueChange = { altRelation = it }, label = { Text("Relationship$altSuffix") }, modifier = Modifier.fillMaxWidth())
+                    RequiredTextField(value = altRelation, onValueChange = { altRelation = it }, label = "Relationship$altSuffix", modifier = Modifier.fillMaxWidth(), showError = showErrors && isMinorApplicant)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = altPhone, onValueChange = { altPhone = it }, label = { Text("Phone$altSuffix") }, modifier = Modifier.weight(1f))
-                        OutlinedTextField(value = altEmail, onValueChange = { altEmail = it }, label = { Text("Email$altSuffix") }, modifier = Modifier.weight(1f))
+                        RequiredTextField(value = altPhone, onValueChange = { altPhone = it }, label = "Phone$altSuffix", modifier = Modifier.weight(1f), showError = showErrors && isMinorApplicant)
+                        RequiredTextField(value = altEmail, onValueChange = { altEmail = it }, label = "Email$altSuffix", modifier = Modifier.weight(1f), showError = showErrors && isMinorApplicant)
                     }
                 }
 
                 StandardCard(title = "Questionnaire") {
-                    OutlinedTextField(value = lookingFor, onValueChange = { lookingFor = it }, label = { Text("What are you looking to adopt?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Cat, Dog, Both, Not decided") })
+                    RequiredTextField(value = lookingFor, onValueChange = { lookingFor = it }, label = "What are you looking to adopt?*", modifier = Modifier.fillMaxWidth(), placeholder = "Cat, Dog, Both, Not decided", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = specificAnimal, onValueChange = { specificAnimal = it }, label = { Text("Applying for a specific shelter animal?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = specificAnimal, onValueChange = { specificAnimal = it }, label = "Applying for a specific shelter animal?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = idealPet, onValueChange = { idealPet = it }, label = { Text("Describe your ideal pet*") }, modifier = Modifier.fillMaxWidth(), maxLines = 4)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = buildingType, onValueChange = { buildingType = it }, label = { Text("Building type*") }, modifier = Modifier.weight(1f), placeholder = { Text("House, Apartment, Condo, Other") })
-                        OutlinedTextField(value = doRent, onValueChange = { doRent = it }, label = { Text("Do you rent?*") }, modifier = Modifier.weight(1f), placeholder = { Text("Yes or No") })
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = movePlan, onValueChange = { movePlan = it }, label = { Text("What happens if/when you move?*") }, modifier = Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = household, onValueChange = { household = it }, label = { Text("Who do you live with?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Living alone, Spouse, Parents, etc.") })
+                    RequiredTextField(value = idealPet, onValueChange = { idealPet = it }, label = "Describe your ideal pet*", modifier = Modifier.fillMaxWidth(), showError = showErrors, maxLines = 4)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = allergic, onValueChange = { allergic = it }, label = { Text("Any household allergies?*") }, modifier = Modifier.weight(1f), placeholder = { Text("Yes or No") })
-                        OutlinedTextField(value = dailyCaregiver, onValueChange = { dailyCaregiver = it }, label = { Text("Who will care for pet?*") }, modifier = Modifier.weight(1f))
+                        RequiredTextField(value = buildingType, onValueChange = { buildingType = it }, label = "Building type*", modifier = Modifier.weight(1f), placeholder = "House, Apartment, Condo, Other", showError = showErrors)
+                        RequiredTextField(value = doRent, onValueChange = { doRent = it }, label = "Do you rent?*", modifier = Modifier.weight(1f), placeholder = "Yes or No", showError = showErrors)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = financialResponsible, onValueChange = { financialResponsible = it }, label = { Text("Who is financially responsible?*") }, modifier = Modifier.fillMaxWidth())
+                    RequiredTextField(value = movePlan, onValueChange = { movePlan = it }, label = "What happens if/when you move?*", modifier = Modifier.fillMaxWidth(), showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = petSitter, onValueChange = { petSitter = it }, label = { Text("Who will look after your pet?*") }, modifier = Modifier.fillMaxWidth())
+                    RequiredTextField(value = household, onValueChange = { household = it }, label = "Who do you live with?*", modifier = Modifier.fillMaxWidth(), placeholder = "Living alone, Spouse, Parents, etc.", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = hoursLeft, onValueChange = { hoursLeft = it }, label = { Text("Hours left alone*") }, modifier = Modifier.weight(1f))
-                        Spacer(modifier = Modifier.height(8.dp))
+                        RequiredTextField(value = allergic, onValueChange = { allergic = it }, label = "Any household allergies?*", modifier = Modifier.weight(1f), placeholder = "Yes or No", showError = showErrors)
+                        RequiredTextField(value = dailyCaregiver, onValueChange = { dailyCaregiver = it }, label = "Who will care for pet?*", modifier = Modifier.weight(1f), showError = showErrors)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = familySupport, onValueChange = { familySupport = it }, label = { Text("Does family support?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = financialResponsible, onValueChange = { financialResponsible = it }, label = "Who is financially responsible?*", modifier = Modifier.fillMaxWidth(), showError = showErrors)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    RequiredTextField(value = petSitter, onValueChange = { petSitter = it }, label = "Who will look after your pet?*", modifier = Modifier.fillMaxWidth(), showError = showErrors)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    RequiredTextField(value = hoursLeft, onValueChange = { hoursLeft = it }, label = "Hours left alone*", modifier = Modifier.fillMaxWidth(), showError = showErrors)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    RequiredTextField(value = familySupport, onValueChange = { familySupport = it }, label = "Does family support?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(value = familyExplain, onValueChange = { familyExplain = it }, label = { Text("Please explain") }, modifier = Modifier.fillMaxWidth(), maxLines = 2)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = otherPets, onValueChange = { otherPets = it }, label = { Text("Do you have other pets?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = otherPets, onValueChange = { otherPets = it }, label = "Do you have other pets?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = pastPets, onValueChange = { pastPets = it }, label = { Text("Have you had pets in the past?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = pastPets, onValueChange = { pastPets = it }, label = "Have you had pets in the past?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                 }
 
                 StandardCard(title = "Interview & Visitation") {
                     if (interactionMethod == "Zoom") {
-                        DateField(value = preferredDate, onValueChange = { preferredDate = it }, label = "Preferred Zoom date*", modifier = Modifier.fillMaxWidth())
+                        DateField(value = preferredDate, onValueChange = { preferredDate = it }, label = "Preferred Zoom date*", modifier = Modifier.fillMaxWidth(), isError = showErrors && preferredDate.isBlank())
                         Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(value = preferredTime, onValueChange = { preferredTime = it }, label = { Text("Preferred Zoom time*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("HH:MM AM/PM") })
+                        RequiredTextField(value = preferredTime, onValueChange = { preferredTime = it }, label = "Preferred Zoom time*", modifier = Modifier.fillMaxWidth(), placeholder = "HH:MM AM/PM", showError = showErrors)
                     } else {
                         Text(
                             text = if (interactionMethod == "Phone") "We will use your registered phone number to contact you for the interview."
@@ -332,7 +345,7 @@ fun ApplyAdoptionScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(value = willVisit, onValueChange = { willVisit = it }, label = { Text("Will you visit the shelter?*") }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Yes or No") })
+                    RequiredTextField(value = willVisit, onValueChange = { willVisit = it }, label = "Will you visit the shelter?*", modifier = Modifier.fillMaxWidth(), placeholder = "Yes or No", showError = showErrors)
                 }
 
                 StandardCard(title = "Your Message") {
@@ -351,6 +364,10 @@ fun ApplyAdoptionScreen(
                     )
                 }
 
+                val idMissing = showErrors && idUri == null
+                val housePhotosMissing = showErrors && houseUris.isEmpty()
+                val termsMissing = showErrors && !termsAccepted
+
                 PrimaryButton(
                     text = "Submit Application",
                     onClick = {
@@ -358,59 +375,43 @@ fun ApplyAdoptionScreen(
                             statusText = "Missing pet ID, user ID, or applicant name"
                             return@PrimaryButton
                         }
+
+                        val missingRequired = address.isBlank() || phone.isBlank() || email.isBlank() || birthDate.isBlank() ||
+                            company.isBlank() || status.isBlank() || pronouns.isBlank() || promptedBy.isBlank() ||
+                            adoptedBefore.isBlank() || interactionMethod.isBlank() || lookingFor.isBlank() ||
+                            specificAnimal.isBlank() || idealPet.isBlank() || buildingType.isBlank() || doRent.isBlank() ||
+                            movePlan.isBlank() || household.isBlank() || allergic.isBlank() || dailyCaregiver.isBlank() ||
+                            financialResponsible.isBlank() || petSitter.isBlank() || hoursLeft.isBlank() ||
+                            familySupport.isBlank() || otherPets.isBlank() || pastPets.isBlank() || willVisit.isBlank() ||
+                            (interactionMethod == "Zoom" && (zoomDetails.isBlank() || preferredDate.isBlank() || preferredTime.isBlank())) ||
+                            (isMinorApplicant && (altName.isBlank() || altRelation.isBlank() || altPhone.isBlank() || altEmail.isBlank()))
+
+                        if (missingRequired) {
+                            showErrors = true
+                            statusText = "Please complete the fields marked \"This field is required\" below."
+                            return@PrimaryButton
+                        }
+
+                        if (idUri == null) {
+                            showErrors = true
+                            statusText = "Please attach a valid ID document."
+                            return@PrimaryButton
+                        }
+                        if (houseUris.isEmpty()) {
+                            showErrors = true
+                            statusText = "Please attach at least one house photo."
+                            return@PrimaryButton
+                        }
                         if (!termsAccepted) {
+                            showErrors = true
                             statusText = "Please accept the terms and privacy consent before submitting."
                             return@PrimaryButton
                         }
 
+                        showErrors = false
+
                         scope.launch {
                             try {
-                                // Validate required form fields before submission
-                                if (address.isBlank() || phone.isBlank() || email.isBlank() || birthDate.isBlank() || company.isBlank() || status.isBlank() || pronouns.isBlank() || promptedBy.isBlank() || adoptedBefore.isBlank() || interactionMethod.isBlank() || lookingFor.isBlank() || specificAnimal.isBlank() || idealPet.isBlank() || buildingType.isBlank() || doRent.isBlank() || movePlan.isBlank() || household.isBlank() || allergic.isBlank() || dailyCaregiver.isBlank() || financialResponsible.isBlank() || petSitter.isBlank() || hoursLeft.isBlank() || familySupport.isBlank() || otherPets.isBlank() || pastPets.isBlank() || willVisit.isBlank()) {
-                                    statusText = "Please complete all required fields before submitting."
-                                    return@launch
-                                }
-                                if (interactionMethod == "Zoom") {
-                                    if (zoomDetails.isBlank()) {
-                                        statusText = "Please provide Zoom meeting details for Zoom interaction."
-                                        return@launch
-                                    }
-                                    if (preferredDate.isBlank() || preferredTime.isBlank()) {
-                                        statusText = "Please complete both Zoom date and time for Zoom interaction."
-                                        return@launch
-                                    }
-                                }
-
-                                val applicantAge: Int? = try {
-                                    val parts = birthDate.split("-")
-                                    if (parts.size == 3) {
-                                        val dob = java.util.Calendar.getInstance().apply {
-                                            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
-                                        }
-                                        val today = java.util.Calendar.getInstance()
-                                        var age = today.get(java.util.Calendar.YEAR) - dob.get(java.util.Calendar.YEAR)
-                                        if (today.get(java.util.Calendar.DAY_OF_YEAR) < dob.get(java.util.Calendar.DAY_OF_YEAR)) age--
-                                        age
-                                    } else null
-                                } catch (e: Exception) {
-                                    null
-                                }
-                                if (applicantAge != null && applicantAge < 18) {
-                                    if (altName.isBlank() || altRelation.isBlank() || altPhone.isBlank() || altEmail.isBlank()) {
-                                        statusText = "You are under 18 — please provide an alternate contact's name, relationship, phone and email."
-                                        return@launch
-                                    }
-                                }
-
-                                if (idUri == null) {
-                                    statusText = "Please attach a valid ID document."
-                                    return@launch
-                                }
-                                if (houseUris.isEmpty()) {
-                                    statusText = "Please attach at least one house photo."
-                                    return@launch
-                                }
-
                                 val formObject = JSONObject().apply {
                                     put("address", address)
                                     put("phone", phone)
@@ -512,13 +513,70 @@ fun ApplyAdoptionScreen(
                         text = "I agree to the terms and conditions and consent to the use of my private information solely for the adoption application process. I understand that if I return the adopted pet, a return penalty of ₱$returnPenaltyAmount applies, per shelter policy.",
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = if (termsMissing) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                         lineHeight = 20.sp
                     )
                 }
 
-                SecondaryButton("Attach ID Document", onClick = { idPicker.launch("image/*") })
-                SecondaryButton("Attach House Photos (multiple)", onClick = { housePicker.launch("image/*") })
+                SecondaryButton("Attach ID Document" + if (idUri != null) " ✓" else "", onClick = { idPicker.launch("image/*") })
+                if (idUri != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(modifier = Modifier.size(140.dp)) {
+                        AsyncImage(
+                            model = idUri,
+                            contentDescription = "Selected ID document",
+                            modifier = Modifier
+                                .size(140.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        IconButton(
+                            onClick = { idUri = null },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(28.dp)
+                                .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(bottomStart = 10.dp, topEnd = 12.dp))
+                        ) {
+                            Icon(Icons.Filled.Close, contentDescription = "Remove ID document", tint = Color.White, modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+                if (idMissing) {
+                    Text("This field is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelSmall)
+                }
+
+                SecondaryButton("Attach House Photos (multiple)" + if (houseUris.isNotEmpty()) " ✓ (${houseUris.size})" else "", onClick = { housePicker.launch("image/*") })
+                if (houseUris.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(houseUris) { uri ->
+                            Box(modifier = Modifier.size(100.dp)) {
+                                AsyncImage(
+                                    model = uri,
+                                    contentDescription = "Selected house photo",
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                IconButton(
+                                    onClick = { houseUris = houseUris.filterNot { it == uri } },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(24.dp)
+                                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(bottomStart = 8.dp, topEnd = 10.dp))
+                                ) {
+                                    Icon(Icons.Filled.Close, contentDescription = "Remove house photo", tint = Color.White, modifier = Modifier.size(14.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+                if (housePhotosMissing) {
+                    Text("This field is required", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelSmall)
+                }
 
                 SecondaryButton("Cancel", onClick = onBack)
 

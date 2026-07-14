@@ -193,7 +193,9 @@ fun DateField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    placeholder: String = "YYYY-MM-DD"
+    placeholder: String = "YYYY-MM-DD",
+    isError: Boolean = false,
+    errorText: String = "This field is required"
 ) {
     var showPicker by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
@@ -217,6 +219,8 @@ fun DateField(
                 Icon(Icons.Filled.DateRange, contentDescription = "Pick date")
             }
         },
+        isError = isError,
+        supportingText = if (isError) { { Text(errorText) } } else null,
         modifier = modifier,
         interactionSource = interactionSource,
         colors = AppTextFieldColors()
@@ -241,6 +245,31 @@ fun DateField(
             DatePicker(state = datePickerState)
         }
     }
+}
+
+/** OutlinedTextField that shows a red border + "This field is required" hint under itself when [showError] is true and empty. */
+@Composable
+fun RequiredTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    showError: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE
+) {
+    val isErr = showError && value.isBlank()
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        placeholder = placeholder?.let { p -> { Text(p) } },
+        isError = isErr,
+        supportingText = if (isErr) { { Text("This field is required") } } else null,
+        modifier = modifier,
+        maxLines = maxLines,
+        colors = AppTextFieldColors()
+    )
 }
 
 @Composable

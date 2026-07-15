@@ -212,7 +212,12 @@ class MainActivity : ComponentActivity() {
 
                         ApplyAdoptionScreen(
                             petId = petId,
-                            onBack = { navController.popBackStack() }
+                            onBack = { navController.popBackStack() },
+                            onSubmitSuccess = {
+                                navController.navigate(Screen.PetsList.route) {
+                                    popUpTo(Screen.PetsList.route) { inclusive = true }
+                                }
+                            }
                         )
                     }
 

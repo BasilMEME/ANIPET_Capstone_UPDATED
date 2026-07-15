@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
@@ -31,6 +32,12 @@ object ApiClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)
+            // Scalars must be registered before Gson: without it, plain String
+            // @Part fields on @Multipart calls (e.g. apply_adoption.php's pet_id,
+            // user_id, terms_accepted) get serialized by Gson as JSON — wrapping
+            // them in quotes ("3" instead of 3) — which then breaks server-side
+            // integer casts (bind_param('i', ...) on a quoted string casts to 0).
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

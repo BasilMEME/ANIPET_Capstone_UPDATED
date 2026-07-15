@@ -18,7 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,7 +50,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ApplyAdoptionScreen(
     petId: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onSubmitSuccess: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -121,6 +124,7 @@ fun ApplyAdoptionScreen(
     var preferredTime by remember { mutableStateOf("") }
     var willVisit by remember { mutableStateOf("") }
     var statusText by remember { mutableStateOf("") }
+    var showSuccessDialog by remember { mutableStateOf(false) }
     var idUri by remember { mutableStateOf<android.net.Uri?>(null) }
     var houseUris by remember { mutableStateOf<List<android.net.Uri>>(emptyList()) }
     var termsAccepted by remember { mutableStateOf(false) }
@@ -485,8 +489,8 @@ fun ApplyAdoptionScreen(
                                     housePhotos = houseParts.ifEmpty { null }
                                 )
                                 statusText = res.message
-                                if (!statusText.contains("Error") && statusText.isNotBlank()) {
-                                    if (statusText.isNotBlank()) statusText += "\nCheck My Applications for updates."
+                                if (res.status == "success") {
+                                    showSuccessDialog = true
                                 }
                             } catch (e: Exception) {
                                 statusText = "Error: ${e.message}"
@@ -580,11 +584,29 @@ fun ApplyAdoptionScreen(
 
                 SecondaryButton("Cancel", onClick = onBack)
 
-                if (statusText.isNotBlank()) {
+                if (statusText.isNotBlank() && !showSuccessDialog) {
                     StandardCard {
                         Text(statusText, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
+        }
+
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { /* require explicit acknowledgement */ },
+                icon = { Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = Color(0xFF1B998B)) },
+                title = { Text("Application Submitted!") },
+                text = { Text("Your adoption application was submitted successfully. Go to My Applications to check its status.") },
+                confirmButton = {
+                    PrimaryButton(
+                        text = "OK",
+                        onClick = {
+                            showSuccessDialog = false
+                            onSubmitSuccess()
+                        }
+                    )
+                }
+            )
         }
     }

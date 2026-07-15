@@ -134,8 +134,10 @@ fun MyApplicationsScreen(
                                 maxLines = 2
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
-                            PrimaryButton("Track Application", onClick = { onTrackClick(app.id) })
+                            if (!app.qr_code.isNullOrBlank()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                PrimaryButton("Track Application", onClick = { onTrackClick(app.id) })
+                            }
 
                             app.qr_code?.let { qrValue ->
                                 Spacer(modifier = Modifier.height(12.dp))

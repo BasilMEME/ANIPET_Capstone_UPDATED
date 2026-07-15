@@ -450,7 +450,7 @@ private fun DashboardContent(
                 )
             }
         } else {
-            items(filteredPets) { pet ->
+            items(filteredPets, key = { pet -> pet.id }) { pet ->
                 PetPreviewCard(
                     pet = pet,
                     onClick = { onPetClick(pet.id) }

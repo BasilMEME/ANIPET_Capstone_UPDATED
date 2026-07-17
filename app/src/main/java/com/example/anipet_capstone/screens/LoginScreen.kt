@@ -40,6 +40,11 @@ fun LoginScreen(
     onNavigateToOtp: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = context.getSharedPreferences(
+        "AniPetPrefs",
+        android.content.Context.MODE_PRIVATE
+    )
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -47,6 +52,8 @@ fun LoginScreen(
     var statusText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val userEmail = prefs.getString("email", "") ?: ""
+    val userId = prefs.getString("user_id", "") ?: ""
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { inner ->
         AppContainer(inner) {
@@ -96,6 +103,15 @@ fun LoginScreen(
                         try {
                             val res = ApiClient.api.loginUser(email, password)
                             if (res.status == "success" && res.user != null) {
+
+                                prefs.edit()
+                                    .putString("user_id", res.user.id.toString())
+                                    .putString("full_name", res.user.full_name)
+                                    .putString("email", res.user.email)
+                                    .putString("username", res.user.username)
+                                    .putString("role", res.user.role)
+                                    .apply()
+
                                 onLoginSuccess(
                                     res.user.id.toString(),
                                     res.user.full_name,

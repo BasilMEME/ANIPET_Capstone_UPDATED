@@ -21,6 +21,8 @@ import retrofit2.http.Query
 import com.example.anipet_capstone.models.QrVerifyResponse
 import com.example.anipet_capstone.models.OtpResponse
 import com.example.anipet_capstone.models.ReturnPolicyResponse
+import com.example.anipet_capstone.models.DonationResponse
+
 
 interface ApiService {
 
@@ -138,6 +140,18 @@ interface ApiService {
 
     @GET("get_return_policy.php")
     suspend fun getReturnPolicy(): ReturnPolicyResponse
+
+    @Multipart
+    @POST("submit_donation.php")
+    suspend fun submitDonation(
+        @Part("user_id") userId: RequestBody,
+        @Part("donor_name") donorName: RequestBody,
+        @Part("pet_name") petName: RequestBody,
+        @Part("amount") amount: RequestBody,
+        @Part("reference_number") referenceNumber: RequestBody,
+        @Part("payment_method") paymentMethod: RequestBody,
+        @Part receipt: MultipartBody.Part?
+    ): DonationResponse
 
     @FormUrlEncoded
     @POST("request_return.php")

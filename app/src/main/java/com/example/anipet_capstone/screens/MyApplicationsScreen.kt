@@ -110,9 +110,16 @@ fun MyApplicationsScreen(
                 }
 
                 applications.forEach { app ->
-                        StandardCard(title = "Application #${app.id}") {
-                            val displayedPetName = app.pet_name.takeUnless { it.isNullOrBlank() } ?: app.pet_id
-                            if (!app.pet_image.isNullOrBlank()) {
+
+                    val displayedPetName =
+                        app.pet_name.takeUnless { it.isNullOrBlank() }
+                            ?: app.pet_id
+
+                    StandardCard(
+                        title = "Application for $displayedPetName"
+                    ) {
+
+                        if (!app.pet_image.isNullOrBlank()) {
                                 AsyncImage(
                                     model = app.pet_image,
                                     contentDescription = displayedPetName,
@@ -125,8 +132,17 @@ fun MyApplicationsScreen(
                             }
                             InfoText("Pet", displayedPetName)
                             InfoText("Applicant", app.applicant_name)
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            AdoptionProgressTracker(app.status)
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
                             InfoText("Status", app.status)
+
                             Spacer(modifier = Modifier.height(8.dp))
+
                             Text(
                                 "Message: ${app.message}",
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
@@ -308,5 +324,93 @@ fun MyApplicationsScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun AdoptionProgressTracker(status: String) {
+
+    val steps = listOf(
+        "pending",
+        "screening",
+        "approved",
+        "for_releasing",
+        "ready_pickup",
+        "completed"
+    )
+
+    val currentIndex = steps.indexOf(status.lowercase()).coerceAtLeast(0)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+    ) {
+
+        Text(
+            text = "📍 Adoption Progress",
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            steps.forEachIndexed { index, _ ->
+                Text(
+                    if (index <= currentIndex) "🟢" else "⚪",
+                    fontSize = 18.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            listOf("🏠","🔍","✅","📦","📅","❤️").forEach {
+                Text(it)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            listOf(
+                "Submitted",
+                "Screening",
+                "Approved",
+                "Release",
+                "Pickup",
+                "Completed"
+            ).forEach {
+                Text(
+                    text = it,
+                    fontSize = 10.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = "Current Status",
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = status.replace("_", " ")
+                .split(" ")
+                .joinToString(" ") {
+                    it.replaceFirstChar { c -> c.uppercase() }
+                }
+        )
     }
 }

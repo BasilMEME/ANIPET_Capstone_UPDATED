@@ -22,7 +22,7 @@ android {
         // API base URL used at build time; default points to emulator host
         // You can override by setting API_BASE_URL in project or global gradle.properties
         val apiBaseUrl: String = (project.findProperty("API_BASE_URL") as? String)
-            ?: "http://10.0.2.2/Anipet/php-backend/"
+            ?: "http://192.168.100.18/Anipet/php-backend/"
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
     }
 

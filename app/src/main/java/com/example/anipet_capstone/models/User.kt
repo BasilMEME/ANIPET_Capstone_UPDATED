@@ -9,5 +9,6 @@ data class User(
     val address: String? = null,
     val phone: String? = null,
     val contact_preference: String? = null
-    , val is_verified: Boolean? = null
+    , val is_verified: Boolean? = null,
+    val profile_picture_url: String? = null
 )

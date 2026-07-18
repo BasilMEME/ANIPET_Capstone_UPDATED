@@ -60,6 +60,13 @@ interface ApiService {
         @Field("otp") otp: String
     ): OtpResponse
 
+    @Multipart
+    @POST("upload_profile_picture.php")
+    suspend fun uploadProfilePicture(
+        @Part("user_id") userId: RequestBody,
+        @Part image: MultipartBody.Part
+    ): UserProfileResponse
+
     @FormUrlEncoded
     @POST("login.php")
     suspend fun loginUser(
